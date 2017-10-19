@@ -1,0 +1,6 @@
+{
+  "namespaces": {
+    "test.*": true
+  }
+}
+

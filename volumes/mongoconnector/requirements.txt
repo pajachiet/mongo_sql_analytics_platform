@@ -1,0 +1,11 @@
+pandas
+pyyaml
+pymongo
+psycopg2
+sqlalchemy
+pymysql
+pexpect
+jinja2
+sqlalchemy_utils
+requests
+https://github.com/pajachiet/pymongo-schema/archive/master.zip

@@ -1,0 +1,53 @@
+version: '3'
+services:
+  mongosource:
+    build:
+      context: volumes/mongosource/.
+    expose: ["27017"]
+    ports:
+      - "0.0.0.0:27017:27017"
+    volumes:
+      - ./volumes/mongosource/data:/home/data
+      - ./volumes/mongosource/log:/var/log/mongodb
+      - ./volumes/mongosource/bin:/home/bin
+    entrypoint: [ "/home/bin/start_mongo_replicaset.sh"]
+
+  mongoconnector:
+    build:
+      context: volumes/mongoconnector/.
+    volumes:
+      - ./volumes/mongoconnector/home:/home
+    entrypoint: [ "/home/entrypoint.sh" ]
+    depends_on:
+      - mongosource
+      - postgres
+
+  postgres:
+    image: postgres:10.0
+    expose: ["5432"]
+    ports:
+      - "5432:5432"
+    volumes:
+        - ./volumes/postgres/data:/var/lib/postgresql/data
+
+  superset:
+    build:
+      context: volumes/superset/.
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8088:8088"
+    volumes:
+       - ./volumes/superset/home:/etc/superset
+
+    environment:
+      MAPBOX_API_KEY: ${MAPBOX_API_KEY}
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+      SUPERSET_ADMIN_PASSWD: ${SUPERSET_ADMIN_PASSWD}
+      SUPERSET_HOME: /etc/superset
+
+  redis:
+    image: redis:4.0
+    volumes:
+      - ./volumes/redis:/data

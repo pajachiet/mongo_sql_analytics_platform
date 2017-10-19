@@ -1,0 +1,3 @@
+SUPERSET_ADMIN_PASSWD=admin_strong_password
+SUPERSET_SECRET_KEY=long_random_string
+MAPBOX_API_KEY=

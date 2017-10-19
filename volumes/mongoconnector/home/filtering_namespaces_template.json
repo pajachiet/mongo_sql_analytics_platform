@@ -1,0 +1,12 @@
+{
+  "namespaces": {
+     "test-db.test-col1":{
+         "excludeFields": ["XXX", "YY"]
+     },
+     "test-db.test-col2":{
+         "includeFields": ["AAA", "bb"]
+         "excludeFields": ["adresse.longlat"]
+     }
+
+}
+
