@@ -5,9 +5,12 @@
 # - Initialize postgres
 
 
+import logging
 import psycopg2
 from sqlalchemy_utils.functions import database_exists, create_database
-from utils import wait_for_mongo, wait_for_postgres, get_mongo_to_posgres_db_names, MONGO_HOST, MONGO_PORT, FILTERING_NAMESPACES_PATH, get_postgres_url, POSTGRES_USERS
+from utils import wait_for_mongo, wait_for_postgres, get_mongo_to_posgres_db_names, logger,\
+    MONGO_HOST, MONGO_PORT, FILTERING_NAMESPACES_PATH, get_postgres_url, POSTGRES_USERS
+
 
 
 def main():
@@ -34,7 +37,7 @@ def clean_postgres(mongo_to_posgres_db_names):
 
             # drop databases
             for postgres_db in mongo_to_posgres_db_names.values():
-                print("Drop target database {} if exists at url {}".format(postgres_db, target_url))
+                logger.info("Drop target database {} if exists at url {}".format(postgres_db, target_url))
 
                 # terminate active connections to database
                 cur.execute("""
@@ -52,7 +55,7 @@ def clean_postgres(mongo_to_posgres_db_names):
             list_roles.remove("postgres")  # keep default role postgres
 
             for postgres_roles in list_roles:
-                print("Drop role {} at url {}".format(postgres_roles, target_url))
+                logger.info("Drop role {} at url {}".format(postgres_roles, target_url))
                 cur.execute("DROP ROLE {};".format(postgres_roles))
 
 
@@ -63,12 +66,12 @@ def init_postgres_users_and_roles():
     with psycopg2.connect(postgres_url) as con:  # with statement automatically commit changes if no errors occurs
         cur = con.cursor()
 
-        print("== Creating PostgreSQL users")
+        logger.info("== Creating PostgreSQL users")
         for user in POSTGRES_USERS:
             if user == "postgres":
                 pass
             else:
-                print("  Creating user '{}'".format(user))
+                logger.info("  Creating user '{}'".format(user))
                 cur.execute("CREATE USER {user};".format(user=user))
 
 
@@ -82,7 +85,7 @@ def init_postgres_databases(mongo_to_posgres_db_names):
         target_url = get_postgres_url('postgres', postgres_db)
 
         if not database_exists(target_url):
-            print("Creating missing target database at url {}".format(target_url))
+            logger.info("Creating missing target database at url {}".format(target_url))
             create_database(target_url)
             with psycopg2.connect(target_url) as con:  # with statement automatically commit changes if no errors occurs
                 cur = con.cursor()

@@ -1,6 +1,7 @@
 data
 dump
 volumes/mongoconnector/home/generated
+volumes/superset/home/superset.db
 .idea
 
 

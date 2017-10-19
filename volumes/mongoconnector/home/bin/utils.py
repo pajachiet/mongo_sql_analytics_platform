@@ -6,10 +6,17 @@ import pymongo
 import psycopg2
 from time import sleep
 
+import logging
+
 MONGO_HOST = "mongosource"
 MONGO_PORT = 27017
 FILTERING_NAMESPACES_PATH = '/home/filtering_namespaces.json'
 POSTGRES_USERS = ['postgres', 'synchro', 'joined']
+
+logger = logging.getLogger('main')
+logger.setLevel(logging.INFO)
+stream_handler = logging.StreamHandler()
+logger.addHandler(stream_handler)
 
 
 def test_connection_to_mongo():
@@ -28,23 +35,23 @@ def wait_for_mongo():
     if test_connection_to_mongo():
         return
 
-    print("\nWaiting until MongoDB accept connexions")
+    logger.info("\nWaiting until MongoDB accept connexions")
     while not test_connection_to_mongo():
         sys.stdout.write('.')
         sys.stdout.flush()
         sleep(1)
-    print('ok')
+    logger.info('ok')
 
 
 def wait_for_postgres():
     if test_connection_to_postgresql():
         return
-    print("\nWaiting until PostgreSQL accept connexions")
+    logger.info("\nWaiting until PostgreSQL accept connexions")
     while not test_connection_to_postgresql():
         sys.stdout.write('.')
         sys.stdout.flush()
         sleep(1)
-    print('ok')
+    logger.info('ok')
 
 
 def test_connection_to_postgresql():

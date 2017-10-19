@@ -50,4 +50,4 @@ services:
   redis:
     image: redis:4.0
     volumes:
-      - ./volumes/redis:/data
+      - ./volumes/redis/data:/data

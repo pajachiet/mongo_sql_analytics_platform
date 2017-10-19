@@ -6,11 +6,10 @@
 
 import json
 import os
-from utils import wait_for_mongo, get_mongo_to_posgres_db_names, MONGO_HOST, MONGO_PORT, FILTERING_NAMESPACES_PATH, get_postgres_url
-import logging
+from utils import wait_for_mongo, get_mongo_to_posgres_db_names, logger, get_postgres_url,\
+    MONGO_HOST, MONGO_PORT, FILTERING_NAMESPACES_PATH
 
-WORKING_DIR = '/home/generated'
-logger = logging.getLogger(__name__)
+WORKING_DIR = '/home/generated/'
 
 
 def main():
@@ -51,10 +50,11 @@ def generate_mongoconnector_config(mongo_to_posgres_db_names):
 def reset_mongo_connector():
     """ Delete log and timestamp files to reset mongo-connector
     """
-    for filename in [ '/oplog.timestamp', 'mongo-connector.log']:
-        if os.path.exists(filename):
+    for filename in ['oplog.timestamp', 'mongo-connector.log']:
+        file_path = WORKING_DIR + filename
+        if os.path.exists(file_path):
             logger.info("Removing {}".format(filename))
-            os.remove(filename)
+            os.remove(file_path)
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-
 # Script to initialize Superset
 # This script is idempotent, and can be run several times
 # - Initialize docker admin

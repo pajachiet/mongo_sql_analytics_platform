@@ -7,10 +7,10 @@
 import logging
 import os
 from pymongo_schema.__main__ import main as pymongo_schema
-from utils import wait_for_mongo, get_mongo_to_posgres_db_names, MONGO_PORT, MONGO_HOST, FILTERING_NAMESPACES_PATH
+from utils import wait_for_mongo, get_mongo_to_posgres_db_names, logger, \
+    MONGO_PORT, MONGO_HOST, FILTERING_NAMESPACES_PATH
 
 WORKING_DIR = '/home/generated'
-logger = logging.getLogger(__name__)
 
 
 def main():

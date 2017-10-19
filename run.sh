@@ -99,7 +99,6 @@ fi
 # RESTORE
 if [ $1 == "restore" ]
 then
-    docker-compose stop
 
     cd volumes/mongosource
         echo "Deleting data from MongoDB source"
@@ -110,6 +109,29 @@ then
         rm -rf dump/*/*.metadata.json
     cd ../..
 
+    cd volumes/mongoconnector/home/generated
+    if [ ! -z "$(ls | grep schema | grep -v schema_filtered)" ]; then
+        while true; do
+            echo "MongoDB schemas already exists from previous run:"
+            echo `ls | grep schema | grep -v schema_filtered | tr ' ' '\n'`
+            echo
+            echo "Extracting schema from MongoDB takes times, but must be done if your MongoDB data changes."
+            read -p  "Do you want to delete existing MongoDB schemas and extract new ones ? [y|n] " yn
+            case $yn in
+                [Yy]* )
+                  echo "Delete existing schemas.";
+                  rm -rf schema_*
+                  break;;
+                [Nn]* )
+                  echo "Going on with existing schemas :";
+                  break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    fi
+    cd ../../../..
+
+    docker-compose stop mongosource
     docker-compose up -d mongosource
     docker-compose exec -T mongosource sh -c "/home/bin/download_data_dump.sh"
 
