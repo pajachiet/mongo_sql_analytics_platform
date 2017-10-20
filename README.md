@@ -11,6 +11,10 @@ This project demonstrate a minimal working architecture to assemble an SQL analy
 
 # Installation & demonstration usage
 
+    git clone git@github.com:pajachiet/mongo_sql_analytics_platform.git
+
+    cd mongo_sql_analytics_platform
+    ./run.sh demo
 
 # Contributors
 

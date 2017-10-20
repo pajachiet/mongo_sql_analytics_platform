@@ -4,8 +4,6 @@
 # - Clean postgres
 # - Initialize postgres
 
-
-import logging
 import psycopg2
 from sqlalchemy_utils.functions import database_exists, create_database
 from utils import wait_for_mongo, wait_for_postgres, get_mongo_to_posgres_db_names, logger,\

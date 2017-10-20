@@ -16,7 +16,7 @@ Create Superset admin account.
 A normal error will occur if it already exists.
 "
 
-superset-init --username='admin' --firstname='admin' --lastname='user' --email='admin@fab.org' --password=${SUPERSET_ADMIN_PASSWD}
+superset-init --username=${SUPERSET_ADMIN_USERNAME} --firstname='admin' --lastname='user' --email='admin@fab.org' --password=${SUPERSET_ADMIN_PASSWD}
 
 cd /etc/superset/bin
 python3 init_superset_databases.py

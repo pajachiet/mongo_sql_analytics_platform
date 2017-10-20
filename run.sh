@@ -19,13 +19,13 @@ Options:
   -h, --help    Display usage and exit
 
 Commands:
+  demo          Run successively 'install', 'init_superset' and 'restore'
   install       Initiate '.env' file. Pull / build all Docker images if they have changed.
   reset         Remove all volume data from containers
-  init_superset Run superset initialization (create users, databases, roles, import dashboards)
   restore       Download and restore dump into mongosource. Then run 'connector' and 'superset'
   connector     Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
   superset      Start Superset
-  stop          Stop services  test          Start the entire datalake pipeline and execute non-regression tests
+  stop          Stop services
 "
   exit
 }
@@ -35,10 +35,19 @@ then
 fi
 
 case $1 in
-    install | init_superset | reset | restore | connector | superset | stop ) ;; #Ok, nothing needs to be done
+    demo | install | reset | restore | connector | superset | stop ) ;; #Ok, nothing needs to be done
     -h | --help ) usage;;
     * ) echo "Incorrect usage."; usage ;;
 esac
+
+
+#### DEMO
+if [ $1 == "demo" ]
+then
+   ./run.sh install
+   ./run.sh restore
+   exit
+fi
 
 
 #### INSTALL
@@ -53,10 +62,7 @@ then
 
     docker-compose pull
     docker-compose build
-
-    docker-compose up -d superset
-    docker-compose exec -T superset sh -c "/etc/superset/bin/init_superset.sh"
-   exit
+    exit
 fi
 
 
@@ -80,7 +86,7 @@ then
         rm -rf mongosource/log
         rm -rf mongoconnector/home/generated
         rm -rf postgres/data
-        rm -f  superset/home/bin/superset.db
+        rm -f  superset/home/superset.db
     cd ..
     exit
 fi
@@ -109,27 +115,31 @@ then
         rm -rf dump/*/*.metadata.json
     cd ../..
 
-    cd volumes/mongoconnector/home/generated
-    if [ ! -z "$(ls | grep schema | grep -v schema_filtered)" ]; then
-        while true; do
-            echo "MongoDB schemas already exists from previous run:"
-            echo `ls | grep schema | grep -v schema_filtered | tr ' ' '\n'`
-            echo
-            echo "Extracting schema from MongoDB takes times, but must be done if your MongoDB data changes."
-            read -p  "Do you want to delete existing MongoDB schemas and extract new ones ? [y|n] " yn
-            case $yn in
-                [Yy]* )
-                  echo "Delete existing schemas.";
-                  rm -rf schema_*
-                  break;;
-                [Nn]* )
-                  echo "Going on with existing schemas :";
-                  break;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
+    if [ -d volumes/mongoconnector/home/generated ]; then
+        cd volumes/mongoconnector/home/generated
+        if [ ! -z "$(ls  | grep schema | grep -v schema_filtered)" ]; then
+            while true; do
+                echo "MongoDB schemas already exists from previous run:"
+                echo `ls  | grep schema | grep -v schema_filtered | tr ' ' '\n'`
+                echo
+                echo "Extracting schema from MongoDB takes times, but must be done if your MongoDB data changes."
+                read -p  "Do you want to delete existing MongoDB schemas and extract new ones ? [y|n] " yn
+                case $yn in
+                    [Yy]* )
+                      echo "Delete existing schemas : ";
+                      echo
+                      ls  | grep schema | grep -v schema_filtered
+                      rm -rf schema_*
+                      break;;
+                    [Nn]* )
+                      echo "Going on with existing schemas :";
+                      break;;
+                    * ) echo "Please answer yes or no.";;
+                esac
+            done
+        fi
+        cd ../../../..
     fi
-    cd ../../../..
 
     docker-compose stop mongosource
     docker-compose up -d mongosource
@@ -143,31 +153,27 @@ then
     done
 
     docker-compose exec -T mongosource sh -c "/home/bin/restore_data_dump.sh"
+    ./run.sh connector
+    exit
 fi
-
 
 
 ### CONNECTOR
-if [ $1 == "connector" ] || [ $1 == "restore" ]
+if [ $1 == "connector" ]
 then
-  docker-compose stop mongoconnector
+    docker-compose stop mongoconnector
 
-  echo "Starting Mongo-connector, sync MongoDB source with PostgreSQL, create additional objects in Postgres"
-  docker-compose up -d mongoconnector
-
+    echo "Starting Mongo-connector, sync MongoDB source with PostgreSQL, create additional objects in Postgres"
+    docker-compose up -d mongoconnector
+    ./run.sh superset
+    exit
 fi
 
 ### SUPERSET
-if [ $1 == "connector" ] || [ $1 == "restore" ] || [ $1 == "superset" ]
+if [ $1 == "superset" ]
 then
-  docker-compose up -d superset
-
-  echo "Waiting until Superset is up"
-  connectSU="curl --no-proxy localhost:8088/health -s -o /dev/null -w '%{http_code}' http://localhost:8088/health | sed 's/[^0-9]*//g'"
-  until [[ $(eval $connectSU) -eq "200" ]] ; do
-    printf '.'
-    sleep 1
-  done
-  echo "Superset is up at : http://localhost:8088"
-  echo
+    docker-compose up -d superset
+    docker-compose exec  superset sh -c "/etc/superset/bin/init_superset.sh" > volumes/superset/init_logs
+    echo "Superset is up at : http://localhost:8088"
+    exit
 fi
