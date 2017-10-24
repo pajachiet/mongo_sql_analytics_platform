@@ -19,13 +19,13 @@ Options:
   -h, --help    Display usage and exit
 
 Commands:
-  demo          Run 'install', download demo data, then run 'restore', 'connector' and 'superset'
-  install       Initiate '.env' file. Pull / build all Docker images if they have changed.
-  restore       Download and restore dump into mongosource. Then run 'connector' and 'superset'
-  connector     Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
-  superset      Start Superset
-  stop          Stop services
-  reset         Reset all services : Remove volumes' data and remove containers
+  demo              Run 'install', download demo data, then run 'restore', 'connector' and 'superset'
+  install           Initiate '.env' file. Pull / build all Docker images if they have changed.
+  restore           Download and restore dump into mongosource. Then run 'connector' and 'superset'
+  connector         Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
+  superset          Start Superset
+  stop              Stop services
+  reset [service]   Reset all services, or selected service. Ie remove volumes data and containers
 "
   exit
 }
@@ -156,28 +156,48 @@ fi
 #### RESET
 if [ $1 == "reset" ]
 then
+    if [ $# = 1 ]; then
+        service=all
+    else
+        service=$2
+    fi
+
+    case ${service} in
+        all | mongosource | mongoconnector | postgres | superset | redis ) ;; #Ok, nothing needs to be done
+        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, superset or redis";;
+    esac
+
     while true; do
-      echo "This WILL DELETE ALL DATA and CONTAINERS of all services : mongosource, mongoconnector, postgres, superset and redis."
-      echo "You could also copy-paste code from the script if you only want to reset some services."
-      read -p "Are you sure? [y|n] : " yn
-      case $yn in
-          [Yy]* ) echo "yes"; break;;
-          [Nn]* ) echo "Abandon"; exit;;
-          * ) echo "Please answer yes or no.";;
-      esac
+        if [ ${service} == "all" ];
+        then
+            echo "This WILL DELETE ALL DATA and CONTAINERS of ALL services : mongosource, mongoconnector, postgres, superset & redis."
+        else
+            echo "This WILL DELETE ALL DATA and CONTAINER of service ${service}."
+        fi
+        read -p "Are you sure? [y|n] : " yn
+        case $yn in
+            [Yy]* ) echo "yes"; break;;
+            [Nn]* ) echo "Abort"; exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
     done
 
-    docker-compose stop
-
-    cd volumes
-        rm -rf mongosource/data
-        rm -rf mongoconnector/data
-        rm -rf postgres/data
-        rm -f  superset/home/superset.db
-        rm -rf redis/data
-    cd ..
-
-    docker-compose rm
+    if [ ${service} == "all" ];
+    then
+        docker-compose stop
+        cd volumes
+            rm -rf mongosource/data
+            rm -rf mongoconnector/data
+            rm -rf postgres/data
+            rm -f  superset/home/superset.db
+            rm -rf redis/data
+        cd ..
+        yes | docker-compose rm
+    else
+        docker-compose stop ${service}
+        rm -rf volumes/${service}/data
+        yes | docker-compose rm ${service}
+    fi
     exit
 fi
 
