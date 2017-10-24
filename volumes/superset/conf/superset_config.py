@@ -10,6 +10,6 @@ CACHE_CONFIG = {
     'CACHE_REDIS_PORT': 6379,
     'CACHE_REDIS_DB': 1,
     'CACHE_REDIS_URL': 'redis://redis:6379/1'}
-SQLALCHEMY_DATABASE_URI = 'sqlite:////etc/superset/superset.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:////etc/superset/data/superset.db'
 
 SQL_MAX_ROW = 100

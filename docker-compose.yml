@@ -47,8 +47,12 @@ services:
     ports:
       - "8088:8088"
     volumes:
-       - ./volumes/superset/home:/etc/superset
+       - ./volumes/superset/bin:/etc/superset/bin
+       - ./volumes/superset/conf:/etc/superset/conf
+       - ./volumes/superset/data:/etc/superset/data
+    working_dir: /etc/superset/conf
     environment:
+      SUPERSET_HOME: /etc/superset/conf
       MAPBOX_API_KEY: ${MAPBOX_API_KEY}
       SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
       SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME}

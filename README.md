@@ -127,8 +127,6 @@ By decreasing priority order :
 - Add schema of the architecture, and a link to the PyParis talk
 - Publish pymongo-schema on PyPi and install it from there
 - Set specific versions in requirements.txt files
-- Improve superset volumes organization, to follow 'bin', 'data', 'conf' organization of other services
-
 - Allow to use external MongoDB & PostgreSQL databases. We will need to 
     - tweak Docker network to connect on host databases
     - remove automatic dependency of mongoconnector to mongosource and postgres in docker-compose

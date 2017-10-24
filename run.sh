@@ -139,7 +139,7 @@ if [ $1 == "superset" ]
 then
     echo "== Starts and initialize Superset"
     docker-compose up -d superset
-    docker-compose exec  superset sh -c "/etc/superset/bin/init_superset.sh" > volumes/superset/init_logs
+    docker-compose exec  superset sh -c "/etc/superset/bin/init_superset.sh" > volumes/superset/data/init_logs
     echo "Superset is up at : http://localhost:8088"
     exit
 fi
@@ -178,7 +178,7 @@ then
     fi
 
     case ${service} in
-        all | mongosource | mongoconnector | postgres | superset | redis | sqlschema) ;; #Ok, nothing needs to be done
+        all | mongosource | mongoconnector | postgres | superset | redis | sqlschema ) ;; #Ok, nothing needs to be done
         * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, sqlschema, superset or redis";;
     esac
 
@@ -201,12 +201,7 @@ then
     then
         docker-compose stop
         cd volumes
-            rm -rf mongosource/data
-            rm -rf mongoconnector/data
-            rm -rf postgres/data
-            rm -f  superset/home/superset.db
-            rm -rf redis/data
-            rm -rf sqlschema/data
+            rm -rf */data
         cd ..
         yes | docker-compose rm
     else
