@@ -8,7 +8,6 @@ services:
       - "0.0.0.0:27017:27017"
     volumes:
       - ./volumes/mongosource/data:/home/data
-      - ./volumes/mongosource/log:/var/log/mongodb
       - ./volumes/mongosource/bin:/home/bin
     entrypoint: [ "/home/bin/start_mongo_replicaset.sh"]
 
@@ -16,11 +15,20 @@ services:
     build:
       context: volumes/mongoconnector/.
     volumes:
-      - ./volumes/mongoconnector/home:/home
-    entrypoint: [ "/home/entrypoint.sh" ]
+      - ./volumes/mongoconnector/bin:/home/bin
+      - ./volumes/mongoconnector/conf:/home/conf
+      - ./volumes/mongoconnector/data:/home/data
+    entrypoint: [ "/home/bin/entrypoint.sh" ]
     depends_on:
       - mongosource
       - postgres
+    environment:
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_ADMIN_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_ADMIN_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
 
   postgres:
     image: postgres:10.0

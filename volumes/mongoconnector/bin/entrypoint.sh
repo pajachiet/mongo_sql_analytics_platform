@@ -8,16 +8,13 @@ set -euo pipefail
 # - start the synchro
 # - create additional objects in postgres
 
-
-mkdir -p /home/generated
 cd /home/bin
-python reset_mongoconnector.py
-python run_pymongo_schema.py
+python prepare_mongoconnector.py
 python reset_postgres.py
 python synchro_status.py &
 
 # Starting mongo-connector
-cd /home/generated
+cd /home/data
 echo "ok. Starting mongo-connector..."
 mongo-connector -c config.json
 

@@ -1,20 +1,158 @@
 # Mongo SQL Analytics Platform
 A Docker architecture to assemble an SQL analytics platform for MongoDB
 
-Are you trap in the MongoDB Analytics gap ? Are you looking for an open-source solution ? 
 
-This project demonstrate a minimal working architecture to assemble an SQL analytics platform for MongoDB. It leverage the following projects:
+## Introduction
+- Are you trap in the MongoDB Analytics gap ? 
+- Are you looking for an open-source solution to analyse your MongoDB data ? 
+
+Then this project is made for you !
+
+The whole platform can be directly used in production, or be adapted to cover your specific needs. 
+
+The architecture leverages Docker Compose, with the following services :
+- **mongosource** : MongoDB database we want to analyze
+- **mongoconnector** : Main service. It maps and synchronizes data between *mongosource* and *postgres*. See [details on mongoconnector](#details-on-mongoconnector) below. 
+- **postgres** : Store MongoDB data, mapped to a relational model
+- **superset** : Open-Source analytics web service, to demonstrate how MongoDB data can easily be analyzed once in postgres. 
+- **redis** : Superset caching database
+  
+## Getting started
+
+This architecture has been tested on Mac & Linux systems, not on Windows.
+
+### Prerequisites : Docker & Docker Compose
+
+- Follow [instructions](https://docs.docker.com/engine/installation/) to install Docker Community Edition (CE) on your system. 
+- Then follow [instructions](https://docs.docker.com/compose/install/) to install Docker Compose. On Mac, compose is packaged with Docker, so you can skip this step.
  
-- **mongo-connector**, to sync data from Mongo to a target DB
-- **mongo-connector-postgresql**, a doc-manager to use PostgreSQL as the target DB
-- **pymongo-schema**, to read MongoDB data model and translate it to a relational model
+ 
+### Getting the project
 
-# Installation & demonstration usage
+Clone the project to a local folder
 
     git clone git@github.com:pajachiet/mongo_sql_analytics_platform.git
-
     cd mongo_sql_analytics_platform
+
+Read **'run.sh'** usage. Latter on, you should also read the script to understand how it works.
+    
+    ./run.sh --help
+
+### Run demonstration 
+
     ./run.sh demo
+
+## Details on mongoconnector 
+
+**mongoconnector** is the main service of this platform. It leverages the following projects:
+ 
+- **mongo-connector**, which sync data from a MongoDB database
+- **mongo-connector-postgresql**, a doc-manager to use PostgreSQL as the target DB of *mongo-connector*
+- **pymongo-schema**, to *extract* MongoDB data model, and *map* it to a relational model used by *mongo-connector-postgresql*
+
+
+## Custom usage, with your own MongoDB data
+
+### Install the platform
+
+    ./run.sh install
+
+### Read and edit variables in **'.env'** file  
+  - Superset admin password and secret key to strong ones
+  - Superset mapbox key, to draw maps in Superset
+
+### option A : Using your own MongoDB data dump.
+
+- Create a dump folder
+
+
+    DB_NAME="mydb"
+    mkdir -p volumes/mongosource/data/dump/${DB_NAME}
+
+- Copy-Paste your data dump in this folder. This dump can either be a list of bson or json files.
+
+- Restore data in mongosource
+
+
+    ./run.sh restore
+
+### option B : Connecting to an external MongoDB database
+
+This is not possible yet, see [TODO](#TODO). 
+
+Edit MongoDB host and port in **'.env'** file
+  
+
+### Synchronize data in PostgreSQL
+
+#### (optional) Edit namespaces.json
+**'volumes/mongoconnector/conf/namespaces.json'** file should be edited using mongo-connector syntax for [Filtering Documents per Namespace](https://github.com/mongodb-labs/mongo-connector/wiki/Configuration-Options#filtering-documents-per-namespace). See also 'volumes/mongoconnector/namespaces_examples.json'.
+ 
+This file is used twice
+
+ - To list MongoDB databases to analyze
+    - All databases in MongoDB if namespaces is empty (Default)
+    - Databases present in at least one 'db.collection' namespaces otherwise (even if value is false)
+
+ - Filtering collections and fields to map to PostgreSQL
+
+#### Launch synchronization
+**BEWARE** : mongoconnector service delete ALL DATA in target PostgreSQL databases.  
+
+    ./run.sh connector
+    
+#### Look at your MongoDB data model
+ 
+You may be interested to take a look at the data model extracted from your MongoDB data.
+
+Read 'volumes/mongoconnector/data/schema_**DB_NAME**.md' file.
+
+You can also check that your schema has been correctly filtered by 'namespaces.json', by looking at 'schema_filtered_**DB_NAME**.md' file.
+    
+    
+#### Launch and initialize Superset
+
+    ./run.sh superset
+
+
+# Contributing
+
+Contributions are welcomed. Please use github Issues and Pull-Request.
+
+
+## TODO
+
+By decreasing priority order : 
+
+- Add demonstration dashboards to Superset
+- Publish pymongo-schema on PyPi and install it from there
+- Set specific versions in requirements.txt files
+- Improve superset volumes organization, to follow 'bin', 'data', 'conf' organization of other services
+
+- Allow to use external MongoDB & PostgreSQL databases. We will need to 
+    - tweak Docker network to connect on host databases
+    - remove automatic dependency of mongoconnector to mongosource and postgres in docker-compose
+
+- Improve mongoconnector scripts quality (function are too long, documentation is too sparse)
+- Improve general README.md
+- Improve 'volumes/mongoconnector/namespaces_examples.json'
+- Add functional tests. Automate them with travis
+
+
 
 # Contributors
 
+This platform has been assembled by the following contributors
+- @pajachiet
+- @Webgardener
+- @aureliengervasi
+- @JulieRossi
+
+# Acknowledgements
+
+This platform assembles services from the following open-source projects. Big thanks to them !
+
+- [mongo-connector](https://github.com/mongodb-labs/mongo-connector)
+- [mongo-connector-postgresql](https://github.com/Hopwork/mongo-connector-postgresql)
+- [pymongo-schema](https://github.com/pajachiet/pymongo-schema)
+- [superset](https://github.com/apache/incubator-superset)

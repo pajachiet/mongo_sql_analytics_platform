@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-mkdir -p /home/data/dump
-cd /home/data/dump
+mkdir -p /home/data/dump/demo
+cd /home/data/dump/demo
 
 #TODO: Add back catalog.books.json when bug in pymongo-schema will be identified (no mapping)
 #TODO : Modify pymongo-schema to quote / change special keywords
