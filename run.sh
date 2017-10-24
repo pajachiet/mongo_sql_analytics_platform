@@ -11,6 +11,7 @@ Usage:
   run.sh restore
   run.sh connector
   run.sh superset
+  run.sh schemacrawler
   run.sh stop
   run.sh reset
   run.sh -h|--help
@@ -24,6 +25,7 @@ Commands:
   restore           Download and restore dump into mongosource. Then run 'connector' and 'superset'
   connector         Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
   superset          Start Superset
+  sqlschema db      Extract SQL Schema of database 'db'
   stop              Stop services
   reset [service]   Reset all services, or selected service. Ie remove volumes data and containers
 "
@@ -35,7 +37,7 @@ then
 fi
 
 case $1 in
-    demo | install | restore | connector | superset | stop  | reset ) ;; #Ok, nothing needs to be done
+    demo | install | restore | connector | superset | sqlschema | stop  | reset ) ;; #Ok, nothing needs to be done
     -h | --help ) usage;;
     * ) echo "Incorrect usage."; usage ;;
 esac
@@ -142,6 +144,19 @@ then
     exit
 fi
 
+### SCHEMACRAWLER
+if [ $1 == "sqlschema" ]
+then
+    if [ $# = 1 ]; then
+        echo "You should give as additional parameter the name of the database you want to extract"
+        exit
+    fi
+    DATABASE=${2}
+    echo "== Extract PostgreSQL schema of database '${DATABASE}'"
+    docker-compose run sqlschema /schemacrawler/bin/extract_sql_schema.sh ${2}
+    exit
+fi
+
 
 #### STOP
 if [ $1 == "stop" ]
@@ -163,14 +178,14 @@ then
     fi
 
     case ${service} in
-        all | mongosource | mongoconnector | postgres | superset | redis ) ;; #Ok, nothing needs to be done
-        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, superset or redis";;
+        all | mongosource | mongoconnector | postgres | superset | redis | sqlschema) ;; #Ok, nothing needs to be done
+        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, sqlschema, superset or redis";;
     esac
 
     while true; do
         if [ ${service} == "all" ];
         then
-            echo "This WILL DELETE ALL DATA and CONTAINERS of ALL services : mongosource, mongoconnector, postgres, superset & redis."
+            echo "This WILL DELETE ALL DATA and CONTAINERS of ALL services : mongosource, mongoconnector, postgres, sqlschema, superset & redis."
         else
             echo "This WILL DELETE ALL DATA and CONTAINER of service ${service}."
         fi
@@ -191,6 +206,7 @@ then
             rm -rf postgres/data
             rm -f  superset/home/superset.db
             rm -rf redis/data
+            rm -rf sqlschema/data
         cd ..
         yes | docker-compose rm
     else

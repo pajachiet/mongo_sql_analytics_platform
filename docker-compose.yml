@@ -9,7 +9,7 @@ services:
     volumes:
       - ./volumes/mongosource/data:/home/data
       - ./volumes/mongosource/bin:/home/bin
-    entrypoint: [ "/home/bin/start_mongo_replicaset.sh"]
+    entrypoint: [ "/home/bin/start_mongo_replicaset.sh" ]
 
   mongoconnector:
     build:
@@ -48,7 +48,6 @@ services:
       - "8088:8088"
     volumes:
        - ./volumes/superset/home:/etc/superset
-
     environment:
       MAPBOX_API_KEY: ${MAPBOX_API_KEY}
       SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
@@ -64,3 +63,16 @@ services:
     image: redis:4.0
     volumes:
       - ./volumes/redis/data:/data
+
+  sqlschema:
+    image: sualeh/schemacrawler
+    volumes:
+      - ./volumes/sqlschema/bin:/schemacrawler/bin
+      - ./volumes/sqlschema/data:/schemacrawler/data
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_ADMIN_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_ADMIN_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+    entrypoint: [ "/schemacrawler/bin/extract_sql_schema.sh" ]
+
