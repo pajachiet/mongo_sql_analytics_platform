@@ -6,9 +6,7 @@ A Docker architecture to assemble an SQL analytics platform for MongoDB
 - Are you trap in the MongoDB Analytics gap ? 
 - Are you looking for an open-source solution to analyse your MongoDB data ? 
 
-Then this project is made for you !
-
-The whole platform can be directly used in production, or be adapted to cover your specific needs. 
+Then this project is made for you ! It can be directly used in production, or adapted to cover your specific needs. 
 
 The architecture leverages Docker Compose, with the following services :
 - **mongosource** : MongoDB database we want to analyze
@@ -123,8 +121,10 @@ Contributions are welcomed. Please use github Issues and Pull-Request.
 ## TODO
 
 By decreasing priority order : 
-
+ 
 - Add demonstration dashboards to Superset
+- Add explanations on demonstration (what it does, what to look for once it has run)
+- Add schema of the architecture, and a link to the PyParis talk
 - Publish pymongo-schema on PyPi and install it from there
 - Set specific versions in requirements.txt files
 - Improve superset volumes organization, to follow 'bin', 'data', 'conf' organization of other services
