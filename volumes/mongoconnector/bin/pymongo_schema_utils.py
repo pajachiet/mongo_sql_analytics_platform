@@ -31,10 +31,11 @@ def extract_mongo_schemas(mongo_databases):
     """
     logger.info("== Extract schema for MongoDB databases, if they do not already exists.")
     for mongo_db in mongo_databases:
-        schema_path = os.path.join(WORKING_DIR, 'schema_{}.json'.format(mongo_db))
-        if os.path.isfile(schema_path):
+        schema_path = os.path.join(WORKING_DIR, 'schema_{}'.format(mongo_db))
+        schema_path_ext = schema_path + '.json'
+        if os.path.isfile(schema_path_ext):
             logger.info("'{}' file already exists. Delete it if you need to update it automatically."
-                        .format(schema_path))
+                        .format(schema_path_ext))
         else:
             logger.info("'{}' does not exists. Let's extract it with pymongo-schema".format(schema_path))
             cmd = ["extract", "-o", schema_path, "--database", mongo_db,
