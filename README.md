@@ -139,6 +139,19 @@ By decreasing priority order :
 - Add functional tests. Automate them with travis
 
 
+# Limitations
+
+## Scaling 
+The main limitation of this approach is that it cannot currently scale to very large MongoDB databases. 
+
+- pymongo-schema could be improved to only scan part of the MongoDB database
+- PostgreSQL can be tuned to improve interactive analytics (good resource [here](https://fr.slideshare.net/pgconf/five-steps-perform2009,
+)), up to a certain point. If one reach its limits, he could consider writing another or more general (sql alchemy compatible) doc manager, to synchronize data to a database more specialized on analytics.  
+ 
+## Data model evolution
+With this architecture, evolution of the data model in MongoDB is not automatically taken into account. One should extract again the data model, and restart synchronization from scratch. 
+ 
+One improvement we made on a specific project is to directly extract MongoDB data model from the code of the application. This avoid us to scan MongoDB data, and allows us to restart synchronization just after the deployment of a new version of the application. Unfortunately this is specific to each project using MongoDB. And we will always need to restart synchronization from scratch to take into account evolutions of the data model.
 
 # Contributors
 
