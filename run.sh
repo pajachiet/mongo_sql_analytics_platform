@@ -52,6 +52,7 @@ then
    ./run.sh restore
    ./run.sh connector
    ./run.sh superset
+   ./run.sh sqlschema
    exit
 fi
 
@@ -131,6 +132,7 @@ then
     echo "generate config.json and mapping_{DB}.json files, destroy and init PostgreSQL target databases, then sync MongoDB source with PostgreSQL"
     docker-compose up -d mongoconnector
     echo "You can follow synchronization logs by running 'docker-compose logs --follow mongoconnector'"
+    echo "You can also look at logs in 'volumes/mongoconnector/data/mongo-connector.log'"
     exit
 fi
 
@@ -152,8 +154,9 @@ then
         exit
     fi
     DATABASE=${2}
-    echo "== Extract PostgreSQL schema of database '${DATABASE}'"
+    echo "== Starting SchemaCrawler, to extract a relational schema for database ${DATABASE}"
     docker-compose run sqlschema /schemacrawler/bin/extract_sql_schema.sh ${2}
+    echo "The SQL schema is available in folder volumes/sqlschema/data."
     exit
 fi
 
@@ -179,7 +182,7 @@ then
 
     case ${service} in
         all | mongosource | mongoconnector | postgres | superset | redis | sqlschema ) ;; #Ok, nothing needs to be done
-        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, sqlschema, superset or redis";;
+        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, sqlschema, superset or redis"; exit;;
     esac
 
     while true; do

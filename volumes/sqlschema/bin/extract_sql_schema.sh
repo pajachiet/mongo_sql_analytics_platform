@@ -2,7 +2,6 @@
 set -euo pipefail
 
 DATABASE=$2
-echo "== Starting SchemaCrawler, to extract a relational schema for database ${DATABASE}"
 /schemacrawler/schemacrawler.sh \
 -server=postgresql \
 -host=${POSTGRES_HOST} -port=${POSTGRES_PORT} \
@@ -14,4 +13,3 @@ echo "== Starting SchemaCrawler, to extract a relational schema for database ${D
 -outputformat=pdf \
 -outputfile=/schemacrawler/data/sql_schema_${DATABASE}.pdf
 echo "... done."
-echo "The SQL schema is available in folder volumes/sqlschema/data."
