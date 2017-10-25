@@ -10,6 +10,8 @@ Then this project is made for you ! It can be used 'as is', or adapted to cover 
 
 This architecture has been tested on Mac & Linux systems, not on Windows.
 
+You will need a **good internet connexion** to install all Docker images.
+
 ### Prerequisites : Docker & Docker Compose
 
 - Follow [instructions](https://docs.docker.com/engine/installation/) to install Docker Community Edition (CE) on your system. 
@@ -58,7 +60,7 @@ The architecture leverages Docker Compose, with the following services :
 
 <img src="doc/services_architecture.png" alt="Services Architecture" width=800  />
 
-It's principle have been exposed in a talk at PyParis 2017 [Open-Source Analytics On MongoDB, with Schema](https://www.youtube.com/watch?v=J5Qn4r8nTpU)
+Its principle have been exposed in a talk at PyParis 2017 **"Open-Source Analytics On MongoDB, with Schema"** ([youtube video](https://www.youtube.com/watch?v=J5Qn4r8nTpU), [slideshare](https://fr.slideshare.net/PoleSystematicParisRegion/opensource-analytics-stack-on-mongodb-with-schema-pierrealain-jachiet-and-aurlien-gervasi))
 
 ### Details on mongoconnector service
 **mongoconnector** is the main service of this platform. It leverages the following projects:
@@ -134,7 +136,14 @@ You can also check that your schema has been correctly filtered by 'namespaces.j
 
 # Contributing
 
-Contributions are welcomed. Please use github Issues and Pull-Request.
+If you use this architecture, please let us know.
+
+Contributions are most welcomed to improve it. 
+
+Github Issues and Pull-Requests will be greatly appreciated.
+
+Please bear in mind that some issues may be related to specific projects used here.
+They will find a better home in the corresponding github repositories.
 
 
 ## TODO
