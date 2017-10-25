@@ -17,8 +17,10 @@ for db_folder in */ ; do
 
         echo "Restore '.json' collections, if present…"
         for file in ${db_folder}*.json; do
-            echo "  -- restore '${file}' file to a MongoDB collection with the same name"
-            mongoimport --db "${db_folder%%/}" --collection $(basename "${file}" .json) --drop --file ${file}
+            if  [ "${file}" != "${db_folder}*.json" ]; then
+                echo "  -- restore '${file}' file to a MongoDB collection with the same name"
+                mongoimport --db "${db_folder%%/}" --collection $(basename "${file}" .json) --drop --file ${file}
+            fi
         done
     fi
 done
