@@ -25,7 +25,7 @@ Commands:
   restore           Download and restore dump into mongosource. Then run 'connector' and 'superset'
   connector         Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
   superset          Start Superset
-  sqlschema db      Extract SQL Schema of database 'db'
+  schemacrawler db  Extract SQL Schema of database 'db'
   stop              Stop services
   reset [service]   Reset all services, or selected service. Ie remove volumes data and containers
 "
@@ -37,7 +37,7 @@ then
 fi
 
 case $1 in
-    demo | install | restore | connector | superset | sqlschema | stop  | reset ) ;; #Ok, nothing needs to be done
+    demo | install | restore | connector | superset | schemacrawler | stop  | reset ) ;; #Ok, nothing needs to be done
     -h | --help ) usage;;
     * ) echo "Incorrect usage."; usage ;;
 esac
@@ -53,7 +53,7 @@ then
    ./run.sh connector
    ./run.sh superset
    docker-compose exec -T superset sh -c  "/etc/superset/bin/import_dashboards.py"
-   ./run.sh sqlschema
+   ./run.sh schemacrawler
    exit
 fi
 
@@ -148,7 +148,7 @@ then
 fi
 
 ### SCHEMACRAWLER
-if [ $1 == "sqlschema" ]
+if [ $1 == "schemacrawler" ]
 then
     if [ $# = 1 ]; then
         echo "You should give as additional parameter the name of the database you want to extract"
@@ -156,8 +156,8 @@ then
     fi
     DATABASE=${2}
     echo "== Starting SchemaCrawler, to extract a relational schema for database ${DATABASE}"
-    docker-compose run sqlschema /schemacrawler/bin/extract_sql_schema.sh ${2}
-    echo "The SQL schema is available in folder volumes/sqlschema/data."
+    docker-compose run schemacrawler /schemacrawler/bin/extract_sql_schema.sh ${2}
+    echo "The SQL schema is available in folder volumes/schemacrawler/data."
     exit
 fi
 
@@ -182,14 +182,14 @@ then
     fi
 
     case ${service} in
-        all | mongosource | mongoconnector | postgres | superset | redis | sqlschema ) ;; #Ok, nothing needs to be done
-        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, sqlschema, superset or redis"; exit;;
+        all | mongosource | mongoconnector | postgres | superset | redis | schemacrawler ) ;; #Ok, nothing needs to be done
+        * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, schemacrawler, superset or redis"; exit;;
     esac
 
     while true; do
         if [ ${service} == "all" ];
         then
-            echo "This WILL DELETE ALL DATA and CONTAINERS of ALL services : mongosource, mongoconnector, postgres, sqlschema, superset & redis."
+            echo "This WILL DELETE ALL DATA and CONTAINERS of ALL services : mongosource, mongoconnector, postgres, schemacrawler, superset & redis."
         else
             echo "This WILL DELETE ALL DATA and CONTAINER of service ${service}."
         fi

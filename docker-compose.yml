@@ -69,11 +69,11 @@ services:
     volumes:
       - ./volumes/redis/data:/data
 
-  sqlschema:
+  schemacrawler:
     image: sualeh/schemacrawler
     volumes:
-      - ./volumes/sqlschema/bin:/schemacrawler/bin
-      - ./volumes/sqlschema/data:/schemacrawler/data
+      - ./volumes/schemacrawler/bin:/schemacrawler/bin
+      - ./volumes/schemacrawler/data:/schemacrawler/data
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}

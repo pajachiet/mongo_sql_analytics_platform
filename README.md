@@ -1,19 +1,10 @@
 # Mongo SQL Analytics Platform
 A Docker architecture to assemble an SQL analytics platform for MongoDB
 
-
-## Introduction
 - Are you trap in the MongoDB Analytics gap ? 
 - Are you looking for an open-source solution to analyse your MongoDB data ? 
 
-Then this project is made for you ! It can be directly used in production, or adapted to cover your specific needs. 
-
-The architecture leverages Docker Compose, with the following services :
-- **mongosource** : MongoDB database we want to analyze
-- **mongoconnector** : Main service. It maps and synchronizes data between *mongosource* and *postgres*. See [details on mongoconnector](#details-on-mongoconnector) below. 
-- **postgres** : Store MongoDB data, mapped to a relational model
-- **superset** : Open-Source analytics web service, to demonstrate how MongoDB data can easily be analyzed once in postgres. 
-- **redis** : Superset caching database
+Then this project is made for you ! It can be used 'as is', or adapted to cover your specific needs. 
   
 ## Getting started
 
@@ -53,8 +44,23 @@ This will
 - Extract a diagram of the relational data model
     - Look in 'volumes/sqlschema/data' for file **sql_schema_demo.pdf**
 
-## Details on mongoconnector 
+## Architecture 
 
+### Services 
+
+The architecture leverages Docker Compose, with the following services :
+- **mongosource** : MongoDB database we want to analyze
+- **mongoconnector** : Main service. It maps and synchronizes data between *mongosource* and *postgres*. See details on mongoconnector below. 
+- **postgres** : Store MongoDB data, mapped to a relational model
+- **superset** : Open-Source analytics web service, to demonstrate how MongoDB data can easily be analyzed once in postgres. 
+- **redis** : Superset caching database
+- **schemacrawler** : Create a diagram of PostgresSQL database 
+
+<img src="doc/services_architecture.png" alt="Services Architecture" width=800  />
+
+It's principle have been exposed in a talk at PyParis 2017 [Open-Source Analytics On MongoDB, with Schema](https://www.youtube.com/watch?v=J5Qn4r8nTpU)
+
+### Details on mongoconnector service
 **mongoconnector** is the main service of this platform. It leverages the following projects:
  
 - **mongo-connector**, which sync data from a MongoDB database
@@ -135,7 +141,6 @@ Contributions are welcomed. Please use github Issues and Pull-Request.
 
 By decreasing priority order : 
  
-- Add schema of the architecture, and a link to the PyParis talk
 - Publish pymongo-schema on PyPi and install it from there
 - Set specific versions in requirements.txt files
 - Allow to use external MongoDB & PostgreSQL databases. We will need to 
@@ -143,10 +148,8 @@ By decreasing priority order :
     - remove automatic dependency of mongoconnector to mongosource and postgres in docker-compose
 
 - Improve mongoconnector scripts quality (function are too long, documentation is too sparse)
-- Improve general README.md
 - Improve 'volumes/mongoconnector/namespaces_examples.json'
 - Add functional tests. Automate them with travis
-
 
 # Limitations
 
@@ -160,7 +163,7 @@ The main limitation of this approach is that it cannot currently scale to very l
 ## Data model evolution
 With this architecture, evolution of the data model in MongoDB is not automatically taken into account. One should extract again the data model, and restart synchronization from scratch. 
  
-One improvement we made on a specific project is to directly extract MongoDB data model from the code of the application. This avoid us to scan MongoDB data, and allows us to restart synchronization just after the deployment of a new version of the application. Unfortunately this is specific to each project using MongoDB. And we will always need to restart synchronization from scratch to take into account evolutions of the data model.
+One improvement we made on a specific project is to directly extract MongoDB data model from the code of the application. This avoid to scan MongoDB data, and allows to restart synchronization just after the deployment of a new version of the application. Unfortunately this is specific to each project using MongoDB. And we will always need to restart synchronization from scratch to take into account evolutions of the data model.
 
 # Contributors
 
