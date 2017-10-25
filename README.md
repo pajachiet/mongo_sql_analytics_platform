@@ -39,6 +39,19 @@ Read **'run.sh'** usage. Latter on, you should also read the script to understan
 ### Run demonstration 
 
     ./run.sh demo
+    
+This will 
+
+- Install all services
+- Download demonstration data, then restore it in a MongoDB database 'demo'
+- Extract the data model of MongoDB and map it to a relational model
+    - Look in 'volumes/mongoconnector/data' for **schema_demo.md** and **mapping_demo.json** files
+- Synchronize data from MongoDB to PostgreSQL
+
+- Launch superset and import dashboards on demo data
+    - Go to **localhost:8088**, and connect with user **admin**, password **admin**
+- Extract a diagram of the relational data model
+    - Look in 'volumes/sqlschema/data' for file **sql_schema_demo.pdf**
 
 ## Details on mongoconnector 
 
@@ -122,8 +135,6 @@ Contributions are welcomed. Please use github Issues and Pull-Request.
 
 By decreasing priority order : 
  
-- Add demonstration dashboards to Superset
-- Add explanations on demonstration (what it does, what to look for once it has run)
 - Add schema of the architecture, and a link to the PyParis talk
 - Publish pymongo-schema on PyPi and install it from there
 - Set specific versions in requirements.txt files

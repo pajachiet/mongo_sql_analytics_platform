@@ -52,6 +52,7 @@ then
    ./run.sh restore
    ./run.sh connector
    ./run.sh superset
+   docker-compose exec -T superset sh -c  "/etc/superset/bin/import_dashboards.py"
    ./run.sh sqlschema
    exit
 fi

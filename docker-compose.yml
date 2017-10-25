@@ -50,6 +50,7 @@ services:
        - ./volumes/superset/bin:/etc/superset/bin
        - ./volumes/superset/conf:/etc/superset/conf
        - ./volumes/superset/data:/etc/superset/data
+       - ./volumes/superset/dashboards:/etc/superset/dashboards
     working_dir: /etc/superset/conf
     environment:
       SUPERSET_HOME: /etc/superset/conf
