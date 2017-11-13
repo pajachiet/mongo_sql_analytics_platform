@@ -20,7 +20,7 @@ Options:
   -h, --help    Display usage and exit
 
 Commands:
-  demo              Run 'install', download demo data, then run 'restore', 'connector' and 'superset'
+  demo              Download demo data, then run 'restore', 'connector' and 'superset'
   install           Initiate '.env' file. Pull / build all Docker images if they have changed.
   restore           Download and restore dump into mongosource. Then run 'connector' and 'superset'
   connector         Launch synchronisatino between mongosource and postgres through mongoconnector. Then run 'superset'
@@ -43,21 +43,6 @@ case $1 in
 esac
 
 
-#### DEMO
-if [ $1 == "demo" ]
-then
-   ./run.sh install
-   docker-compose up -d mongosource
-   docker-compose exec -T mongosource sh -c "/home/bin/download_demo_data_dump.sh"
-   ./run.sh restore
-   ./run.sh connector
-   ./run.sh superset
-   docker-compose exec -T superset sh -c  "/etc/superset/bin/import_dashboards.py"
-   ./run.sh schemacrawler
-   exit
-fi
-
-
 #### INSTALL
 if [ $1 == "install" ]
 then
@@ -72,6 +57,21 @@ then
     docker-compose build
     exit
 fi
+
+
+#### DEMO
+if [ $1 == "demo" ]
+then
+   docker-compose up -d mongosource
+   docker-compose exec -T mongosource sh -c "/home/bin/download_demo_data_dump.sh"
+   ./run.sh restore
+   ./run.sh connector
+   ./run.sh superset
+   docker-compose exec -T superset sh -c  "/etc/superset/bin/import_dashboards.py"
+   ./run.sh schemacrawler
+   exit
+fi
+
 
 # RESTORE
 if [ $1 == "restore" ]

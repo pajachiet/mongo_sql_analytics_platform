@@ -1,50 +1,33 @@
-# Mongo SQL Analytics Platform
-A Docker architecture to assemble an SQL analytics platform for MongoDB
-
+# Introduction
 - Are you trap in the MongoDB Analytics gap ? 
-- Are you looking for an open-source solution to analyse your MongoDB data ? 
+- Are you looking for an open-source solution to analyze your MongoDB data ? 
 
-Then this project is made for you ! It can be used 'as is', or adapted to cover your specific needs. 
+Then this project is made for you ! It assembles a platform to perform SQL analytics on MongoDB data.  
+
+Its core service is to synchronize data from MongoDB to PostgreSQL, applying a relational mapping in the process.
+
+It also allows you to
+- extract the schema of your MongoDB data, in markdown
+- visualize the diagram of your new data schema in PostgreSQL
+- explore and analyze your data with Superset, an open-source business intelligence web application  
+
   
-## Getting started
+# Quick start
 
-This architecture has been tested on Mac & Linux systems, not on Windows.
+Follow this steps : 
+- Install [Docker]((https://docs.docker.com/engine/installation/)) (CE) & [Docker Compose](https://docs.docker.com/compose/install/) on your system.
+- Download the project `git clone git@github.com:pajachiet/mongo_sql_analytics_platform.git`
+- Download and install docker services `./run.sh install`. 
+- Run demonstration `./run.sh demo`
+- Connect to Superset at **localhost:8088**, with user **admin** and password **admin**. 
 
-You will need a **good internet connexion** to install all Docker images.
+Under the hood, demonstration script will :
 
-### Prerequisites : Docker & Docker Compose
-
-- Follow [instructions](https://docs.docker.com/engine/installation/) to install Docker Community Edition (CE) on your system. 
-- Then follow [instructions](https://docs.docker.com/compose/install/) to install Docker Compose. On Mac, compose is packaged with Docker, so you can skip this step.
- 
- 
-### Getting the project
-
-Clone the project to a local folder
-
-    git clone git@github.com:pajachiet/mongo_sql_analytics_platform.git
-    cd mongo_sql_analytics_platform
-
-Read **'run.sh'** usage. Latter on, you should also read the script to understand how it works.
-    
-    ./run.sh --help
-
-### Run demonstration 
-
-    ./run.sh demo
-    
-This will 
-
-- Install all services
-- Download demonstration data, then restore it in a MongoDB database 'demo'
-- Extract the data model of MongoDB and map it to a relational model
-    - Look in 'volumes/mongoconnector/data' for **schema_demo.md** and **mapping_demo.json** files
+- Download json demonstration data, and ingest it in MongoDB database 'demo'
+- Extract the schema of MongoDB data to `volumes/mongoconnector/data/schema_demo.md` file. Map this schema to a relational model in `mapping_demo.json` file.
 - Synchronize data from MongoDB to PostgreSQL
-
-- Launch superset and import dashboards on demo data
-    - Go to **localhost:8088**, and connect with user **admin**, password **admin**
-- Extract a diagram of the relational data model
-    - Look in 'volumes/sqlschema/data' for file **sql_schema_demo.pdf**
+- Import demonstration dashboards in Superset
+- Extract a diagram of the relational data model to `volumes/sqlschema/data/sql_schema_demo.pdf` file
 
 ## Architecture 
 
@@ -65,9 +48,9 @@ Its principle have been exposed in a talk at PyParis 2017 **"Open-Source Analyti
 ### Details on mongoconnector service
 **mongoconnector** is the main service of this platform. It leverages the following projects:
  
-- **mongo-connector**, which sync data from a MongoDB database
-- **mongo-connector-postgresql**, a doc-manager to use PostgreSQL as the target DB of *mongo-connector*
-- **pymongo-schema**, to *extract* MongoDB data model, and *map* it to a relational model used by *mongo-connector-postgresql*
+- [**mongo-connector**](https://github.com/mongodb-labs/mongo-connector), which sync data from a MongoDB database
+- [**mongo-connector-postgresql**](https://github.com/Hopwork/mongo-connector-postgresql), a doc-manager to use PostgreSQL as the target DB of *mongo-connector*
+- [**pymongo-schema**](https://github.com/pajachiet/pymongo-schema), to *extract* MongoDB data model, and *map* it to a relational model used by *mongo-connector-postgresql*
 
 
 ## Custom usage, with your own MongoDB data
@@ -80,7 +63,15 @@ Its principle have been exposed in a talk at PyParis 2017 **"Open-Source Analyti
   - Superset admin password and secret key to strong ones
   - Superset mapbox key, to draw maps in Superset
 
-### option A : Using your own MongoDB data dump.
+### Connect to your MongoDB data
+#### option A : Connecting to an external MongoDB database
+
+Edit MongoDB host and port in **'.env'** file.
+
+Note : this is not easy yet to connect to a MongoDB running on host. See [TODO](#TODO)
+  
+
+#### option B : Using your own MongoDB data dump.
 
 - Create a dump folder
 
@@ -94,13 +85,6 @@ Its principle have been exposed in a talk at PyParis 2017 **"Open-Source Analyti
 
 
     ./run.sh restore
-
-### option B : Connecting to an external MongoDB database
-
-This is not possible yet, see [TODO](#TODO). 
-
-Edit MongoDB host and port in **'.env'** file
-  
 
 ### Synchronize data in PostgreSQL
 
@@ -129,9 +113,25 @@ Read 'volumes/mongoconnector/data/schema_**DB_NAME**.md' file.
 You can also check that your schema has been correctly filtered by 'namespaces.json', by looking at 'schema_filtered_**DB_NAME**.md' file.
     
     
-#### Launch and initialize Superset
+#### Use Superset to analyze your data
 
     ./run.sh superset
+
+This command will launch and initialize Superset.
+ 
+To explore your data, you will have to
+- create table (datasource)
+- create slices (visualization)
+- assemble slices into dashboards
+
+Look at [Superset documentation](https://superset.incubator.apache.org/) for more information.
+    
+#### Extract a diagram of the relational data model
+    
+
+    ./run.sh schemacrawler <DB_NAME>
+
+This command will extract a diagram of the relational data model of database <DB_NAME> to file `volumes/sqlschema/data/sql_schema_DB_NAME.pdf`    
 
 
 # Contributing
@@ -142,8 +142,7 @@ Contributions are most welcomed to improve it.
 
 Github Issues and Pull-Requests will be greatly appreciated.
 
-Please bear in mind that some issues may be related to specific projects used here.
-They will find a better home in the corresponding github repositories.
+Please bear in mind that some issues may be related to specific projects used here. Those issues will find a better home in the corresponding github repositories.
 
 
 ## TODO
@@ -152,7 +151,7 @@ By decreasing priority order :
  
 - Publish pymongo-schema on PyPi and install it from there
 - Set specific versions in requirements.txt files
-- Allow to use external MongoDB & PostgreSQL databases. We will need to 
+- Allow to use MongoDB & PostgreSQL hosted on host system. We will need to 
     - tweak Docker network to connect on host databases
     - remove automatic dependency of mongoconnector to mongosource and postgres in docker-compose
 
@@ -167,12 +166,12 @@ The main limitation of this approach is that it cannot currently scale to very l
 
 - pymongo-schema could be improved to only scan part of the MongoDB database
 - PostgreSQL can be tuned to improve interactive analytics (good resource [here](https://fr.slideshare.net/pgconf/five-steps-perform2009,
-)), up to a certain point. If one reach its limits, he could consider writing another or more general (sql alchemy compatible) doc manager, to synchronize data to a database more specialized on analytics.  
+)), up to a certain point. Using PostreSQL extensions (CitusDB, PosgresXL or Greenplum) may be another solution. Or one should consider extending mongo-connector-postgresql to more general - sql alchemy compatible - doc manager. This would allow to synchronize data to a specialized analytics database.
  
 ## Data model evolution
-With this architecture, evolution of the data model in MongoDB is not automatically taken into account. One should extract again the data model, and restart synchronization from scratch. 
+With this solution, evolution of the data model in MongoDB is not automatically taken into account. One should extract again the data model, and restart synchronization from scratch. 
  
-One improvement we made on a specific project is to directly extract MongoDB data model from the code of the application. This avoid to scan MongoDB data, and allows to restart synchronization just after the deployment of a new version of the application. Unfortunately this is specific to each project using MongoDB. And we will always need to restart synchronization from scratch to take into account evolutions of the data model.
+One improvement we made on a specific project where we use this solution was to directly extract MongoDB data model from the code of the application. This avoid to scan MongoDB data, and allows to restart synchronization just after the deployment of a new version of the application. Unfortunately this is specific to each project using MongoDB. And we will always need to restart synchronization from scratch to take into account evolutions of the data model.
 
 # Contributors
 
