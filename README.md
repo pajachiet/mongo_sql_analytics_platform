@@ -1,6 +1,5 @@
 # Introduction
-- Are you trap in the MongoDB Analytics gap ? 
-- Are you looking for an open-source solution to analyze your MongoDB data ? 
+Are you trap in the MongoDB Analytics gap ? Looking for an open-source solution to analyze your MongoDB data ? 
 
 Then this project is made for you ! It assembles a platform to perform SQL analytics on MongoDB data.  
 
@@ -31,6 +30,9 @@ Under the hood, demonstration script will :
 
 ## Architecture 
 
+
+This architecture has been exposed in a talk at PyParis 2017 **"Open-Source Analytics On MongoDB, with Schema"** : [youtube video](https://www.youtube.com/watch?v=J5Qn4r8nTpU), [slideshare](https://fr.slideshare.net/PoleSystematicParisRegion/opensource-analytics-stack-on-mongodb-with-schema-pierrealain-jachiet-and-aurlien-gervasi), [blog post](https://blog.octo.com/open-source-analytics-on-mongodb-with-schema/) (in french, although we could translate it if asked to)
+
 ### Services 
 
 The architecture leverages Docker Compose, with the following services :
@@ -42,8 +44,6 @@ The architecture leverages Docker Compose, with the following services :
 - **schemacrawler** : Create a diagram of PostgresSQL database 
 
 <img src="doc/services_architecture.png" alt="Services Architecture" width=800  />
-
-Its principle have been exposed in a talk at PyParis 2017 **"Open-Source Analytics On MongoDB, with Schema"** ([youtube video](https://www.youtube.com/watch?v=J5Qn4r8nTpU), [slideshare](https://fr.slideshare.net/PoleSystematicParisRegion/opensource-analytics-stack-on-mongodb-with-schema-pierrealain-jachiet-and-aurlien-gervasi))
 
 ### Details on mongoconnector service
 **mongoconnector** is the main service of this platform. It leverages the following projects:
