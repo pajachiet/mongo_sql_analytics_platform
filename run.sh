@@ -37,8 +37,8 @@ then
 fi
 
 case $1 in
-    demo | install | restore | connector | superset | schemacrawler | stop  | reset ) ;; #Ok, nothing needs to be done
-    -h | --help ) usage;;
+    demo|install|restore|connector|superset|schemacrawler|stop|reset ) ;; #Ok, nothing needs to be done
+    -h|--help ) usage;;
     * ) echo "Incorrect usage."; usage ;;
 esac
 
@@ -182,7 +182,7 @@ then
     fi
 
     case ${service} in
-        all | mongosource | mongoconnector | postgres | superset | redis | schemacrawler ) ;; #Ok, nothing needs to be done
+        all|mongosource|mongoconnector|postgres|superset|redis|schemacrawler ) ;; #Ok, nothing needs to be done
         * ) echo "Incorrect usage. We can only reset one of the following service : mongosource, mongoconnector, postgres, schemacrawler, superset or redis"; exit;;
     esac
 
