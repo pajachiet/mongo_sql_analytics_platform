@@ -69,7 +69,7 @@ services:
       - ./volumes/redis/data:/data
 
   schemacrawler:
-    image: sualeh/schemacrawler
+    image: schemacrawler/schemacrawler
     volumes:
       - ./volumes/schemacrawler/bin:/schemacrawler/bin
       - ./volumes/schemacrawler/data:/schemacrawler/data
