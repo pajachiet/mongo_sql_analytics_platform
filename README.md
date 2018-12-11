@@ -1,3 +1,8 @@
+**WARNING** : This project is not maintained anymore. It uses `mongo-connector-postgresql` which has now been replaced by [mongo-postgresql-streamer](https://github.com/Maltcommunity/mongo-postgresql-streamer).
+
+It may still be usefull to test the different components, and we will welcome contributions.
+
+
 # Introduction
 Are you trap in the MongoDB Analytics gap ? Looking for an open-source solution to analyze your MongoDB data ? 
 
